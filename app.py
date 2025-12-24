@@ -1,9 +1,11 @@
 import streamlit as st
 import time
-import matplotlib.pyplot as plt
+import sys
+
+sys.setrecursionlimit(3000)
 
 # ===============================
-# Fungsi Iteratif (Brute Force)
+# Fungsi Iteratif
 # ===============================
 def hitung_konsonan_iteratif(kalimat):
     konsonan = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
@@ -14,7 +16,7 @@ def hitung_konsonan_iteratif(kalimat):
     return jumlah
 
 # ===============================
-# Fungsi Rekursif (Divide & Conquer)
+# Fungsi Rekursif
 # ===============================
 def hitung_konsonan_rekursif(kalimat, index=0):
     konsonan = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
@@ -28,87 +30,59 @@ def hitung_konsonan_rekursif(kalimat, index=0):
         return hitung_konsonan_rekursif(kalimat, index + 1)
 
 # ===============================
-# Tampilan Streamlit
+# UI STREAMLIT
 # ===============================
-st.title("📊 Analisis Iteratif & Rekursif")
-st.subheader("📊 Perbandingan Running Time")
-st.write(
-    "Aplikasi ini membandingkan algoritma **Iteratif (Brute Force)** "
-    "dan **Rekursif (Divide & Conquer)** dalam menghitung jumlah konsonan."
-)
+st.title("📊 Analisis Algoritma Iteratif vs Rekursif")
+st.subheader("Menghitung Jumlah Huruf Konsonan")
 
-kalimat = st.text_area("Masukkan kalimat:", "")
+st.write("""
+Aplikasi ini membandingkan **algoritma iteratif dan rekursif**
+dalam menghitung jumlah huruf konsonan,
+serta menampilkan **waktu eksekusi dan kompleksitas algoritma**.
+""")
 
-if st.button("Hitung & Tampilkan Grafik"):
+kalimat = st.text_area("Masukkan kalimat:")
+
+if st.button("Hitung"):
     if kalimat.strip() == "":
-        st.warning("Silakan masukkan kalimat terlebih dahulu.")
+        st.warning("Kalimat tidak boleh kosong.")
     else:
-        # ===============================
-        # Variasi ukuran data
-        # ===============================
-        ukuran_data = [100, 500, 1000, 2000, 3000, 4000, 5000]
-        waktu_iteratif = []
-        waktu_rekursif = []
+        n = len(kalimat)
 
-        for n in ukuran_data:
-            # Perbesar input untuk iteratif
-            data_uji = kalimat * (n // max(len(kalimat), 1))
+        # Iteratif
+        start_i = time.time()
+        hasil_i = hitung_konsonan_iteratif(kalimat)
+        end_i = time.time()
 
-            # ===============================
-            # Iteratif (aman untuk data besar)
-            # ===============================
-            start = time.time()
-            hitung_konsonan_iteratif(data_uji)
-            waktu_iteratif.append(time.time() - start)
+        # Rekursif
+        start_r = time.time()
+        hasil_r = hitung_konsonan_rekursif(kalimat)
+        end_r = time.time()
 
-            # ===============================
-            # Rekursif (DIBATASI agar tidak error)
-            # ===============================
-            data_rekursif = data_uji[:500]  # maksimal 500 karakter
-            start = time.time()
-            hitung_konsonan_rekursif(data_rekursif)
-            waktu_rekursif.append(time.time() - start)
+        st.success("Perhitungan berhasil")
 
-        st.success("✅ Perhitungan berhasil!")
+        col1, col2 = st.columns(2)
 
-        # ===============================
-        # Grafik Matplotlib
-        # ===============================
-        fig, ax = plt.subplots(figsize=(10, 5))
+        with col1:
+            st.markdown("### 🔁 Algoritma Iteratif")
+            st.write(f"Jumlah konsonan: **{hasil_i}**")
+            st.write(f"Waktu eksekusi: **{end_i - start_i:.8f} detik**")
+            st.markdown("**Kompleksitas Waktu:** O(n)")
+            st.markdown("**Kompleksitas Ruang:** O(1)")
 
-        ax.plot(
-            ukuran_data,
-            waktu_iteratif,
-            marker='o',
-            linewidth=2,
-            label='Brute Force O(n²)'
-        )
+        with col2:
+            st.markdown("### 🔂 Algoritma Rekursif")
+            st.write(f"Jumlah konsonan: **{hasil_r}**")
+            st.write(f"Waktu eksekusi: **{end_r - start_r:.8f} detik**")
+            st.markdown("**Kompleksitas Waktu:** O(n)")
+            st.markdown("**Kompleksitas Ruang:** O(n)")
 
-        ax.plot(
-            ukuran_data,
-            waktu_rekursif,
-            marker='o',
-            linewidth=2,
-            label='Divide & Conquer O(n log n)'
-        )
-
-        ax.set_title("Visualisasi Running Time", fontweight='bold')
-        ax.set_xlabel("Ukuran Data (n)")
-        ax.set_ylabel("Waktu (detik)")
-        ax.grid(True, linestyle='--', alpha=0.6)
-        ax.legend()
-
-        st.pyplot(fig)
-
-        # ===============================
-        # Kesimpulan
-        # ===============================
         st.markdown("---")
-        st.markdown("### 📌 Kesimpulan")
-        st.write(
-            "Algoritma **iteratif** mampu menangani input berukuran besar "
-            "dengan stabil. Sebaliknya, algoritma **rekursif** memiliki "
-            "keterbatasan kedalaman pemanggilan fungsi sehingga harus "
-            "dibatasi untuk mencegah *stack overflow*. Hal ini menunjukkan "
-            "bahwa iteratif lebih efisien untuk data besar."
-        )
+        st.markdown("### 📌 Analisis Kompleksitas")
+        st.write(f"""
+Jumlah karakter (n): **{n}**
+
+- Kedua algoritma melakukan pengecekan terhadap setiap karakter → **O(n)**
+- Algoritma iteratif lebih efisien memori karena tidak menggunakan stack rekursi
+- Algoritma rekursif berisiko **stack overflow** jika input sangat panjang
+""")
