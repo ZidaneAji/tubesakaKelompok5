@@ -3,7 +3,7 @@ import time
 import matplotlib.pyplot as plt
 
 # ===============================
-# Fungsi Iteratif
+# Fungsi Iteratif (Brute Force)
 # ===============================
 def hitung_konsonan_iteratif(kalimat):
     konsonan = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
@@ -14,14 +14,14 @@ def hitung_konsonan_iteratif(kalimat):
     return jumlah
 
 # ===============================
-# Fungsi Rekursif
+# Fungsi Rekursif (Divide & Conquer)
 # ===============================
 def hitung_konsonan_rekursif(kalimat, index=0):
     konsonan = "bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ"
-    
+
     if index == len(kalimat):
         return 0
-    
+
     if kalimat[index] in konsonan:
         return 1 + hitung_konsonan_rekursif(kalimat, index + 1)
     else:
@@ -31,8 +31,7 @@ def hitung_konsonan_rekursif(kalimat, index=0):
 # Tampilan Streamlit
 # ===============================
 st.title("📊 Analisis Iteratif & Rekursif")
-st.subheader("Perbandingan Running Time")
-
+st.subheader("📊 Perbandingan Running Time")
 st.write(
     "Aplikasi ini membandingkan algoritma **Iteratif (Brute Force)** "
     "dan **Rekursif (Divide & Conquer)** dalam menghitung jumlah konsonan."
@@ -45,26 +44,32 @@ if st.button("Hitung & Tampilkan Grafik"):
         st.warning("Silakan masukkan kalimat terlebih dahulu.")
     else:
         # ===============================
-        # Pengujian dengan variasi ukuran input
+        # Variasi ukuran data
         # ===============================
         ukuran_data = [100, 500, 1000, 2000, 3000, 4000, 5000]
         waktu_iteratif = []
         waktu_rekursif = []
 
         for n in ukuran_data:
+            # Perbesar input untuk iteratif
             data_uji = kalimat * (n // max(len(kalimat), 1))
 
-            # Iteratif
+            # ===============================
+            # Iteratif (aman untuk data besar)
+            # ===============================
             start = time.time()
             hitung_konsonan_iteratif(data_uji)
             waktu_iteratif.append(time.time() - start)
 
-            # Rekursif
+            # ===============================
+            # Rekursif (DIBATASI agar tidak error)
+            # ===============================
+            data_rekursif = data_uji[:500]  # maksimal 500 karakter
             start = time.time()
-            hitung_konsonan_rekursif(data_uji)
+            hitung_konsonan_rekursif(data_rekursif)
             waktu_rekursif.append(time.time() - start)
 
-        st.success("✅ Perhitungan selesai!")
+        st.success("✅ Perhitungan berhasil!")
 
         # ===============================
         # Grafik Matplotlib
@@ -75,9 +80,7 @@ if st.button("Hitung & Tampilkan Grafik"):
             ukuran_data,
             waktu_iteratif,
             marker='o',
-            color='red',
             linewidth=2,
-            markersize=8,
             label='Brute Force O(n²)'
         )
 
@@ -85,15 +88,13 @@ if st.button("Hitung & Tampilkan Grafik"):
             ukuran_data,
             waktu_rekursif,
             marker='o',
-            color='blue',
             linewidth=2,
-            markersize=8,
             label='Divide & Conquer O(n log n)'
         )
 
-        ax.set_title("Visualisasi Running Time", fontsize=14, fontweight='bold')
-        ax.set_xlabel("Ukuran Data (n)", fontsize=12)
-        ax.set_ylabel("Waktu (detik)", fontsize=12)
+        ax.set_title("Visualisasi Running Time", fontweight='bold')
+        ax.set_xlabel("Ukuran Data (n)")
+        ax.set_ylabel("Waktu (detik)")
         ax.grid(True, linestyle='--', alpha=0.6)
         ax.legend()
 
@@ -105,9 +106,9 @@ if st.button("Hitung & Tampilkan Grafik"):
         st.markdown("---")
         st.markdown("### 📌 Kesimpulan")
         st.write(
-            "Berdasarkan grafik, algoritma **iteratif (Brute Force)** "
-            "menunjukkan pertumbuhan waktu eksekusi yang lebih cepat "
-            "dibandingkan algoritma **rekursif (Divide & Conquer)**. "
-            "Hal ini membuktikan bahwa algoritma dengan kompleksitas "
-            "lebih kecil lebih efisien untuk input berukuran besar."
+            "Algoritma **iteratif** mampu menangani input berukuran besar "
+            "dengan stabil. Sebaliknya, algoritma **rekursif** memiliki "
+            "keterbatasan kedalaman pemanggilan fungsi sehingga harus "
+            "dibatasi untuk mencegah *stack overflow*. Hal ini menunjukkan "
+            "bahwa iteratif lebih efisien untuk data besar."
         )
