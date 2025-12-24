@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import pandas as pd
 
 # ===============================
 # Fungsi Iteratif
@@ -53,7 +54,9 @@ if st.button("Hitung Konsonan"):
         hasil_rekursif = hitung_konsonan_rekursif(kalimat)
         end_rekursif = time.time()
 
-        # Hasil
+        waktu_iteratif = end_iteratif - start_iteratif
+        waktu_rekursif = end_rekursif - start_rekursif
+
         st.success("✅ Perhitungan selesai!")
 
         col1, col2 = st.columns(2)
@@ -61,17 +64,32 @@ if st.button("Hitung Konsonan"):
         with col1:
             st.markdown("### 🔁 Algoritma Iteratif")
             st.write(f"Jumlah konsonan: **{hasil_iteratif}**")
-            st.write(f"Waktu eksekusi: **{end_iteratif - start_iteratif:.8f} detik**")
+            st.write(f"Waktu eksekusi: **{waktu_iteratif:.8f} detik**")
 
         with col2:
             st.markdown("### 🔂 Algoritma Rekursif")
             st.write(f"Jumlah konsonan: **{hasil_rekursif}**")
-            st.write(f"Waktu eksekusi: **{end_rekursif - start_rekursif:.8f} detik**")
+            st.write(f"Waktu eksekusi: **{waktu_rekursif:.8f} detik**")
+
+        # ===============================
+        # Grafik Perbandingan
+        # ===============================
+        st.markdown("---")
+        st.markdown("### 📈 Grafik Perbandingan Waktu Eksekusi")
+
+        data = {
+            "Algoritma": ["Iteratif", "Rekursif"],
+            "Waktu Eksekusi (detik)": [waktu_iteratif, waktu_rekursif]
+        }
+
+        df = pd.DataFrame(data).set_index("Algoritma")
+        st.bar_chart(df)
 
         st.markdown("---")
         st.markdown("### 📌 Kesimpulan Singkat")
         st.write(
-            "Algoritma iteratif umumnya lebih efisien dalam penggunaan memori, "
-            "sedangkan algoritma rekursif lebih mudah dipahami secara konsep "
-            "namun berisiko stack overflow untuk input yang sangat panjang."
+            "Berdasarkan grafik, algoritma **iteratif** umumnya memiliki waktu "
+            "eksekusi yang lebih cepat dan penggunaan memori lebih efisien. "
+            "Sementara itu, algoritma **rekursif** lebih mudah dipahami secara konsep "
+            "namun kurang optimal untuk input yang panjang."
         )
