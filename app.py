@@ -33,7 +33,7 @@ def hitung_konsonan_rekursif(kalimat, index=0):
 # ===============================
 # UI STREAMLIT
 # ===============================
-st.title("📊 Analisis Algoritma Iteratif & Rekursif")
+st.title("Analisis Algoritma Iteratif & Rekursif")
 st.subheader("Perbandingan Running Time & Kompleksitas")
 
 st.write("""
